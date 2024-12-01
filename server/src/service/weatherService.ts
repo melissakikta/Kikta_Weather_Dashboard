@@ -142,18 +142,114 @@ class WeatherService {
     }
   }
 
-  // TODO: Create fetchWeatherData method
-  private async fetchWeatherData(coordinates: Coordinates) {}
+  // fetchWeatherData method
+  private async fetchWeatherData(coordinates: Coordinates): Promise<Weather | null> { 
+    try {
+      //Weather query URL
+      const weatherQuery = this.buildWeatherQuery(coordinates);
 
-  // TODO: Build parseCurrentWeather method
-  private parseCurrentWeather(response: any) {}
+      //get weather data from API
+      const response = await axios.get(weatherQuery);
 
-  // TODO: Complete buildForecastArray method
-  private buildForecastArray(currentWeather: Weather, weatherData: any[]) {}
+      //get fields from API response
+      const { city, weather, main, wind } = response.data;
 
-  // TODO: Complete getWeatherForCity method
-  async getWeatherForCity(city: string) {}
+      //Create and return a new Weather object
+      return new Weather(
+        city.name,
+        weather[0].description,
+        main.temp,
+        wind.speed,
+        main.humidity,
+      );
+    } catch (error) {
+      console.error('Error getting weather data:', error.message);
+      return null;
+    }
+  }
 
+  //parseCurrentWeather method
+  private parseCurrentWeather(response: any) {
+    try {
+      //Get fields from API response
+      const {
+        name: city,
+        weather: [{ description: condition }],
+        main: { temp: temperature, humidity },
+        wind: { speed: wind }, 
+      } = response;
+
+      //Create and Return a Weather Object
+      return new Weather(city, condition, temperature, wind, humidity);
+    } catch (error) {
+      throw new Error('Error parsing weather data:' + error.message);
+    }
+  }
+
+  // buildForecastArray method
+  private buildForecastArray(currentWeather: Weather, weatherData: any[]): Weather [] {
+    try {
+      //Put the current weather as the first element in the array
+      const forecastArray: Weather[] = [currentWeather];
+
+      // Make the forecast data
+      weatherData.forEach((data) => {
+        const {
+          name: city,
+          weather: [{ description: condition }],
+          main: { temp: temperature, humidity },
+          wind: { speed: wind },
+        } = data;
+
+        //New Weather object for each forecast item
+        const forecastWeather = new Weather(city: string, condition: string, temperature: number, wind: number, humidity: number);
+
+        //Add to Forecast array
+        forecastArray.push(forecastWeather);
+      });
+
+      //Return array of Weather onjects
+      return forecastArray;
+    } catch (error) {
+      console.error('Error creating forecast:', error.message);
+      return [];
+    }
+  }
+
+  // getWeatherForCity method
+  async getWeatherForCity(city: string): Promise<Weather | Weather[] | null> {
+    try {
+      //set city name
+      this.cityName = city;
+
+      //Get and destructure coordinates
+      const coordinates = await this.fetchAndDestructureLocationData();
+      if (!coordinates) {
+        console.error('Unable to retrieve weather data for the city.');
+        return null;
+      }
+
+      //Get current weather data
+      const currentWeather = await this.fetchWeatherData(coordinates);
+      if (!currentWeather) {
+        console.error('Could not retrieve weather data for city.');
+        return null;
+      }
+
+      //Get forecast data
+      const forecastQuery = `${this.baseURL}/forecast?lat=${coordinates.latitude}&lon=${coordinates.longitude}&apiKey=${this.apiKey}`;
+      const forecastResponse = await axios.get(forecastQuery);
+
+      //Create forecast array with current weather and forecast data
+      const forecastArray = this.buildForecastArray(currentWeather, forecastResponse.data.daily);
+
+      //Return current weather and forecast array
+      return forecastArray;
+    } catch (error) {
+      console.error('Error getting weather for city:', error.message);
+      return null;
+    }
+  }
 }
 
 export default new WeatherService();
