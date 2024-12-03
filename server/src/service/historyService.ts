@@ -1,4 +1,5 @@
 import fs from 'node:fs/promise';
+import { v4 as uuidv4 } from 'uuid'; 
 
 // City class with name and id properties
 class City {
@@ -14,7 +15,7 @@ class City {
 // HistoryService class
 class HistoryService {
   //Read method that reads from the searchHistory.json file
-  private async read() {
+  private async read(): Promise<string> {
     return await fs.readfile('db/db.json'), {
       flag: 'a+',
       encoding: 'utf8',

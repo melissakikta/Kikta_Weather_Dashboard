@@ -4,39 +4,93 @@ import historyService from '../../service/historyService';
 import weatherService from '../../service/weatherService';
 
 
-// TODO: POST Request with city name to retrieve weather data
+//POST Request with city name to retrieve weather data
 router.post('/', async (req: Request, res: Response) => {
-  try {
+  
     const { city } = req.body; //Pull city from the request
+    
     if (!city) {
       return res.status(400).json({error: 'City name is required.'});
     }
 
+  try {
     //Get weather data from city name
-    const weatherData = await weatherService.getWeatherByCity(city);
+    const weatherData = await weatherService.getWeatherForCity(city);
 
     //Save city to search history
-    await historyService.saveCity(city);
+    await historyService.addCity(city);
 
     //send weather data to the user
-    res.status(200).json({
+    return res.status(200).json({
       message: 'Weather data retrieved successfully.',
       data: weatherData,
     });
   } catch (error) {
-    console..error('Error retrieving weather data:', error);
+    console.error('Error retrieving weather data:', error);
 
     //Message if city isn't in the database
-    res.status(500).json({
+    return res.status(500).json({
       error: 'City cannot be found',
     });
   }
 });
 
-// TODO: GET search history
-router.get('/history', async (req: Request, res: Response) => {});
+// GET search history
+router.get('/history', async (_, res: Response) => {  
+    //Retrieve search history
+    const searchHistory = await historyService.getCities();
+  
+  try {
+    //Check for search history
+    if (!searchHistory || searchHistory.length === 0) {
+      return res.status(404).json({
+        message: 'No search history found.',
+      });
+    }
+
+    //send search history to the user
+    return res.status(200).json({
+      message: 'Search history',
+      data: searchHistory,
+    });
+  } catch (error) {
+    console.error('Error retrieving search history:', error);
+
+    //handle errors
+    return res.status(500).json({
+      error: 'Failed to retrieve search history.',
+    });
+  }
+});
 
 // * BONUS TODO: DELETE city from search history
-router.delete('/history/:id', async (req: Request, res: Response) => {});
+router.delete('/history/:id', async (req: Request, res: Response) => {
+  
+    //Get city ID from parameters
+    const city = req.params.id;
+  
+  try {
+    //Check the input
+    if (!city) {
+      return res.status(400).json({
+        error: 'City name required to delete.',
+      });
+      }
+
+      //Delete the city from the search history
+      const wasRemoved = await historyService.removeCity(city);
+
+      if (!wasRemoved) {
+        return res.status(404).json({
+          message: `City "${city}" not found in search history.`
+        });
+      }
+
+      //respond with success message
+      return res.status(200).json({
+        error: 'Failed to delete city from search history.',
+      });
+  }
+});
 
 export default router;
