@@ -1,4 +1,3 @@
-import fs from 'node:fs/promises'
 import dotenv from 'dotenv';
 import axios from 'axios';
 dotenv.config();
@@ -137,7 +136,12 @@ class WeatherService {
         return null;
       }
     } catch (error) {
-      console.error('Error in fetchAndDestructureLocationData:', error.message);
+      // Narrow the type of error before accessing `message`
+      if (error instanceof Error) {
+        console.error('Error in fetchAndDestructureLocationData:', error.message);
+      } else {
+        console.error('Unknown error in fetchAndDestructureLocationData:', error);
+      }
       return null;
     }
   }
@@ -152,18 +156,14 @@ class WeatherService {
       const response = await axios.get(weatherQuery);
 
       //get fields from API response
-      const { city, weather, main, wind } = response.data;
+     return this.parseCurrentWeather(response.data);
 
-      //Create and return a new Weather object
-      return new Weather(
-        city.name,
-        weather[0].description,
-        main.temp,
-        wind.speed,
-        main.humidity,
-      );
     } catch (error) {
-      console.error('Error getting weather data:', error.message);
+      if (error instanceof Error) {
+        console.error('Error getting weather data:', error.message);
+      } else {
+        console.error('Unknown error in fetchWeatherData:', error);
+      }
       return null;
     }
   }
@@ -182,7 +182,11 @@ class WeatherService {
       //Create and Return a Weather Object
       return new Weather(city, condition, temperature, wind, humidity);
     } catch (error) {
-      throw new Error('Error parsing weather data:' + error.message);
+      if (error instanceof Error) {
+        throw new Error('Error parsing weather data: ' + error.message);
+      } else {
+        throw new Error('Unknown error while parsing weather data.');
+      }
     }
   }
 
@@ -202,7 +206,7 @@ class WeatherService {
         } = data;
 
         //New Weather object for each forecast item
-        const forecastWeather = new Weather(city: string, condition: string, temperature: number, wind: number, humidity: number);
+        const forecastWeather = new Weather(city, condition, temperature, wind, humidity);
 
         //Add to Forecast array
         forecastArray.push(forecastWeather);
@@ -211,8 +215,11 @@ class WeatherService {
       //Return array of Weather onjects
       return forecastArray;
     } catch (error) {
-      console.error('Error creating forecast:', error.message);
-      return [];
+      if (error instanceof Error) {
+        throw new Error('Error building forecast array: ' + error.message);
+      } else {
+        throw new Error('Unknown error occurred while building forecast array.');
+      }
     }
   }
 
@@ -246,7 +253,11 @@ class WeatherService {
       //Return current weather and forecast array
       return forecastArray;
     } catch (error) {
-      console.error('Error getting weather for city:', error.message);
+      if (error instanceof Error) {
+        console.error('Error in getWeatherForCity:', error.message);
+      } else {
+        console.error('Unknown error in getWeatherForCity:', error);
+      }
       return null;
     }
   }

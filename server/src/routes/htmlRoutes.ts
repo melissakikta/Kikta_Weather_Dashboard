@@ -7,7 +7,7 @@ const router = Router();
 
 
 // Done: Define route to serve index.html
-router.get('/', (req, res) => {
+router.get('/', (_, res) => {
   const filePath = path.join(__dirname, '../client/public', 'index.html');
   res.sendFile(filePath);
 });
