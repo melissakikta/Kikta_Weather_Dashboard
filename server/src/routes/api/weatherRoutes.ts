@@ -6,19 +6,19 @@ import weatherService from '../../service/weatherService.js';
 
 //POST Request with city name to retrieve weather data
 router.post('/', async (req: Request, res: Response) => {
+  const { cityName } = req.body; //Pull city from the request
   
-    const { city } = req.body; //Pull city from the request
-    
-    if (!city) {
-      return res.status(400).json({error: 'City name is required.'});
-    }
-
+  if (!cityName) {
+    return res.status(400).json({error: 'City name is required.'});
+  }
+  
   try {
     //Get weather data from city name
-    const weatherData = await weatherService.getWeatherForCity(city);
-
+    const weatherData = await weatherService.getWeatherForCity(cityName);
+    console.log(weatherData);
+    
     //Save city to search history
-    await historyService.addCity(city);
+    await historyService.addCity(cityName);
 
     //send weather data to the user
     return res.status(200).json({
@@ -39,7 +39,7 @@ router.post('/', async (req: Request, res: Response) => {
 router.get('/history', async (_, res: Response) => {  
     //Retrieve search history
     const searchHistory = await historyService.getCities();
-  
+    // console.log searchHistory;
   try {
     //Check for search history
     if (!searchHistory || searchHistory.length === 0) {
@@ -63,7 +63,7 @@ router.get('/history', async (_, res: Response) => {
   }
 });
 
-// * BONUS TODO: DELETE city from search history
+// DELETE city from search history
 router.delete('/history/:id', async (req: Request, res: Response) => {
   
     //Get city ID from parameters

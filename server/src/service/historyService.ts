@@ -17,7 +17,7 @@ class HistoryService {
   //Read method that reads from the searchHistory.json file
   private async read(): Promise<string> {
     try {
-    return await fs.readFile('db/db.json', {
+    return await fs.readFile('./db/searchHistory.json', {
       flag: 'a+',
       encoding: 'utf8',
     });
@@ -32,7 +32,7 @@ class HistoryService {
 
   // Write method that writes the updated cities array to the searchHistory.json file
   private async write(cities: City[]): Promise<void> {
-    return await fs.writeFile('searchHistory.json', JSON.stringify(cities, null, '\t'));
+    return await fs.writeFile('./db/searchHistory.json', JSON.stringify(cities, null, '\t'));
   }
 
   // GetCities method that reads the cities from the searchHistory.json file and returns them as an array of City objects

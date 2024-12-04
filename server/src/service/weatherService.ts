@@ -48,7 +48,7 @@ class WeatherService {
   constructor(){
     this.baseURL = process.env.API_BASE_URL || '';
     this.apiKey = process.env.API_KEY || '';
-    this.cityName = '';
+    this.cityName = process.env.API_CITY_NAME || '';
   }
   // fetchLocationData method for getting lat and lon coordinates
   private async fetchLocationData(query: string): Promise<Coordinates | null> {
