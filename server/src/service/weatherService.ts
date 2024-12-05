@@ -48,7 +48,7 @@ class WeatherService {
   constructor(){
     this.baseURL = process.env.API_BASE_URL || '';
     this.apiKey = process.env.API_KEY || '';
-    this.cityName = process.env.API_CITY_NAME || '';
+    this.cityName = '';
   }
   // fetchLocationData method for getting lat and lon coordinates
   private async fetchLocationData(query: string): Promise<Coordinates | null> {
@@ -61,7 +61,7 @@ class WeatherService {
       const response = await axios.get(`${this.baseURL}/locations`, {
         params: {
           query, //city or location
-          apiKey: this.apiKey,
+          apiKey: this.apiKey
         },
       });
       //Get and return the coordinates from API
@@ -69,7 +69,7 @@ class WeatherService {
 
       return {
         latitude,
-        longitude,
+        longitude
       };
     } catch (error) {
       console.error('Error retreiving location data:', error);
@@ -87,7 +87,7 @@ class WeatherService {
     //return the structured coordinates object
     return {
       latitude, 
-      longitude,
+      longitude
     };
   }
 
@@ -98,9 +98,7 @@ class WeatherService {
     }
 
     //Query string for geocoding
-    const query = encodeURIComponent(this.cityName.trim());
-
-    return query;
+    return encodeURIComponent(this.cityName.trim());
   }
 
   // buildWeatherQuery method
@@ -116,9 +114,7 @@ class WeatherService {
     //Query URL for weather data
     const { latitude, longitude } = coordinates;
 
-    const query = `${this.baseURL}/weather?lat=${latitude}&lon=${longitude}&apiKey=${this.apiKey}`;
-
-    return query;
+    return `${this.baseURL}/weather?lat=${latitude}&lon=${longitude}&apiKey=${this.apiKey}`;
   }
 
   // fetchAndDestructureLocationData method
@@ -128,13 +124,9 @@ class WeatherService {
       const geocodeQuery = this.buildGeocodeQuery();
       //fetch location data from query
       const locationData = await this.fetchLocationData(geocodeQuery);
-      //Destructure data or error out
-      if (locationData) {
-        return this.destructureLocationData(locationData);
-      } else {
-        console.error('Failed to fetch location data.');
-        return null;
-      }
+      
+      return locationData ? this.destructureLocationData(locationData) : null;
+
     } catch (error) {
       // Narrow the type of error before accessing `message`
       if (error instanceof Error) {
@@ -169,7 +161,7 @@ class WeatherService {
   }
 
   //parseCurrentWeather method
-  private parseCurrentWeather(response: any) {
+  private parseCurrentWeather(response: any): Weather {
     try {
       //Get fields from API response
       const {
@@ -192,7 +184,7 @@ class WeatherService {
 
   // buildForecastArray method
   private buildForecastArray(currentWeather: Weather, weatherData: any[]): Weather [] {
-    try {
+
       //Put the current weather as the first element in the array
       const forecastArray: Weather[] = [currentWeather];
 
@@ -205,23 +197,11 @@ class WeatherService {
           wind: { speed: wind },
         } = data;
 
-        //New Weather object for each forecast item
-        const forecastWeather = new Weather(city, condition, temperature, wind, humidity);
-
-        //Add to Forecast array
-        forecastArray.push(forecastWeather);
+        forecastArray.push(new Weather(city, condition, temperature, wind, humidity));
       });
-
       //Return array of Weather onjects
       return forecastArray;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error('Error building forecast array: ' + error.message);
-      } else {
-        throw new Error('Unknown error occurred while building forecast array.');
-      }
-    }
-  }
+    } 
 
   // getWeatherForCity method
   async getWeatherForCity(city: string): Promise<Weather | Weather[] | null> {
@@ -247,11 +227,9 @@ class WeatherService {
       const forecastQuery = `${this.baseURL}/forecast?lat=${coordinates.latitude}&lon=${coordinates.longitude}&apiKey=${this.apiKey}`;
       const forecastResponse = await axios.get(forecastQuery);
 
-      //Create forecast array with current weather and forecast data
-      const forecastArray = this.buildForecastArray(currentWeather, forecastResponse.data.daily);
-
       //Return current weather and forecast array
-      return forecastArray;
+      return this.buildForecastArray(currentWeather, forecastResponse.data.daily);
+
     } catch (error) {
       if (error instanceof Error) {
         console.error('Error in getWeatherForCity:', error.message);
