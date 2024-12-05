@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 // import fs from 'node:fs/promises';
 // import { v4 as uuidv4 } from 'uuid'; 
@@ -25,6 +26,8 @@ class HistoryService {
   private filePath: string;
 
   constructor() {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
     this.filePath = path.resolve(__dirname, 'searchHistory.json');
   }
 
@@ -78,8 +81,8 @@ class HistoryService {
 
     //check if the city already exists
     const existingCity = cities.find(city => city.name.toLowerCase() ===cityName.toLowerCase());
-    if (!existingCity) {
-      throw new Error(`City "${cityName} already exists in the history.`);
+    if (existingCity) {
+      throw new Error(`City "${cityName}" already exists in the history.`);
     }
 
     const newCity = new City(cityName);
@@ -100,15 +103,25 @@ class HistoryService {
   }
 
   // RemoveCity method that removes a city from the searchHistory.json file
-  async removeCity(id: string): Promise<void> {
-    const cities = await this.read();
-    const updatedCities = cities.filter((city) => city.id !== id);
+  async removeCity(id: string): Promise<boolean> {
+    const cities = await this.getCities();
+    const cityIndex = cities.findIndex(city => city.id === id);
 
-    if (updatedCities.length === cities.length) {
-      throw new Error(`City with ID "${id}" not found.`);
+    if (cityIndex === -1) {
+      return false; // City not found
     }
-    
-    await this.write(updatedCities);
+
+    // Remove the city
+    cities.splice(cityIndex, 1);
+    await this.write(cities);
+    return true; // City deleted successfully
+  } catch (error: unknown) { // Use 'unknown' for the error type
+    if (error instanceof Error) {
+      console.error('Error in removeCity:', error.message); // Safely access the message
+    } else {
+      console.error('Unknown error in removeCity:', error); // Log the raw error if it's not an Error instance
+    }
+    throw new Error('Failed to remove city.');
   }
 }
 

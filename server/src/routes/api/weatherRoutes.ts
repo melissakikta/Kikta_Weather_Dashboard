@@ -63,9 +63,7 @@ router.delete('/history/:id', async (req: Request, res: Response) => {
       const result = await historyService.removeCity(id);
 
       if (!result) {
-        return res.status(404).json({
-          error: `City "${id}" not found in search history.`
-        });
+        return res.status(404).json({ error: 'City not found in search history.' });
       }
 
       //respond with success message

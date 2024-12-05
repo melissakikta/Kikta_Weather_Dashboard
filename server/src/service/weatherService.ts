@@ -66,7 +66,8 @@ class WeatherService {
       });
       //Get and return the coordinates from API
       const { latitude, longitude } = response.data;
-
+      console.log('API Response Data:', response.data);
+      
       return {
         latitude,
         longitude
@@ -148,8 +149,13 @@ class WeatherService {
       const response = await axios.get(weatherQuery);
 
       //get fields from API response
-     return this.parseCurrentWeather(response.data);
+     const parsedWeather = this.parseCurrentWeather(response.data);
 
+     if (!parsedWeather) {
+      throw new Error('Parsed weather data is null or invalid.');
+    }
+    return parsedWeather; 
+    
     } catch (error) {
       if (error instanceof Error) {
         console.error('Error getting weather data:', error.message);
@@ -161,7 +167,7 @@ class WeatherService {
   }
 
   //parseCurrentWeather method
-  private parseCurrentWeather(response: any): Weather {
+  private parseCurrentWeather(response: any): Weather | null {
     try {
       //Get fields from API response
       const {

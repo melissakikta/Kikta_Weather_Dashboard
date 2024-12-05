@@ -43,6 +43,10 @@ const fetchWeather = async (cityName: string) => {
     body: JSON.stringify({ cityName }),
   });
 
+  if (!response.ok) {
+    throw new Error(`API request failed with status ${response.status}`);
+  }
+
   const weatherData = await response.json();
 
   console.log('weatherData: ', weatherData);

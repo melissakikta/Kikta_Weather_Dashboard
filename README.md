@@ -17,26 +17,21 @@ A video tutorial can be found [here](https://drive.google.com/file/d/1RD-HuWyUbW
 ## 📝 Usage - Fix Pictures
 <strong>Weather Dashboard</strong>
 
-This application will allow users to input a city's name and retrieve current and future weather information.  
+This application will allow users to input a city's name and retrieve current and future weather information. The user can complie a list of searched cities and delete from the list.  
 
-<u><strong>Initial Code Prompt:</strong></u>
+<u><strong>Empty Dashboard</strong></u>
 
-![Prompt Questions](./asset/prompt.jpg)
-
-
-<u><strong>Prompt of Existing Vehicle</strong></u>
-
-![Console with Prompts](./asset/prompt.jpg)
+![Empty Dashboard](./assets/dashboard.jpg)
 
 
-<u><strong>Prompt of New Vehicle</strong></u>
+<u><strong>City Cearch</strong></u>
 
-![Generated README File](./asset/prompt.jpg)
+![City Search](./assets/city_search.jpg)
 
 
-<u><strong>Prompt for Additional Actions</strong></u>
+<u><strong>Search History</strong></u>
 
-![Generated README File](./asset/prompt.jpg)
+![Search History](./assets/search_history.jpg)
 
 
 Back to [Table-of-Contents](#🚀-table-of-contents)
