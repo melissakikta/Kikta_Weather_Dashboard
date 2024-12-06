@@ -4,7 +4,7 @@ This is a weather dashboard application that calls the OpenWeather API and rende
 ## 📚 Description
 This application is designed to allow the user to access rel-time weather information by location of their choosing. The weather data is retreived from OpenWeather API. The dashboard includes a 5-day weather forcast as well as the current weather status of the city. 
 
-A video tutorial can be found [here](https://drive.google.com/file/d/1RD-HuWyUbWBZ7rc2hKB-S1zRYbrDF4GG/view?usp=sharing)
+A video tutorial can be found [here](https://drive.google.com/file/d/19bHS5s5fn4t02xEqps-nmS44EQE7QSzu/view?usp=sharing)
 
 ## 🚀 Table of Contents
   * [Usage](#📝-Usage)
@@ -24,14 +24,14 @@ This application will allow users to input a city's name and retrieve current an
 ![Empty Dashboard](./assets/dashboard.jpg)
 
 
-<u><strong>City Cearch</strong></u>
+<u><strong>Current Weather</strong></u>
 
-![City Search](./assets/city_search.jpg)
+![City Search](./assets/5_day.jpg)
 
 
-<u><strong>Search History</strong></u>
+<u><strong>5-Day Forecast</strong></u>
 
-![Search History](./assets/search_history.jpg)
+![Search History](./assets/current.jpg)
 
 
 Back to [Table-of-Contents](#🚀-table-of-contents)
