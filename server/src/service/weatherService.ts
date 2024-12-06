@@ -216,9 +216,12 @@ class WeatherService {
   private buildForecastArray(currentWeather: Weather, weatherData: any[]): Weather[] {
     // Start with the current weather as the first element
     const forecastArray: Weather[] = [currentWeather];
-  
+    const filteredWeatherData = weatherData.filter((data:any) => {
+      return data.dt_txt.includes('12:00:00')
+    })
+
     // Loop through the forecast data (list of time slots)
-    weatherData.forEach((data) => {
+    filteredWeatherData.forEach((data) => {
       const {
         dt, // Timestamp for the forecast
         weather: [{ icon, description: iconDescription }], // Weather details
